@@ -1,16 +1,21 @@
-game V1.3 - assets/tiles 단일 원본 구조
+game V1.3 Vercel FIXED
 
-[핵심 변경]
-- assets/tiles/tile_01.png ~ tile_24.png를 유일한 타일 이미지 원본으로 유지
-- public/assets/tiles 중복 폴더 제거
-- assets/data/tiles.json을 유일한 타일 데이터 원본으로 유지
-- Vite 빌드 후 scripts/copy-assets.mjs가 assets/ 전체를 dist/assets/로 복사
-- 기존 코드의 /assets/tiles/... 및 /assets/data/tiles.json 경로는 그대로 사용 가능
+[수정 원인]
+이전 copy-assets.mjs가 dist/assets 전체를 삭제한 뒤 원본 assets를 복사하여,
+Vite가 생성한 CSS/JS 번들 파일까지 함께 삭제되는 문제가 있었습니다.
+그 결과 배포 페이지가 HTML 기본 스타일로 표시되고 JS도 정상 로드되지 않을 수 있었습니다.
 
-[업로드]
-GitHub 저장소 루트에 이 폴더의 '내용물'을 업로드하세요.
-ZIP 파일 자체를 업로드하지 마세요.
+[현재 수정]
+- assets/tiles의 타일 이미지 24개를 원본으로 유지
+- assets/data/tiles.json 유지
+- Vite가 만든 dist/assets 내 CSS/JS 번들은 삭제하지 않음
+- 빌드 후 assets/data와 assets/tiles만 dist/assets에 추가 복사
 
-[배포]
-Vercel은 npm run build 실행 후 dist/를 배포합니다.
-build 과정에서 assets/가 dist/assets/로 자동 복사됩니다.
+[GitHub 업데이트]
+기존 carcassonne-game-v13 로컬 저장소에 이 ZIP의 내용물을 덮어쓴 뒤:
+1. GitHub Desktop에서 변경 파일 확인
+2. Summary: Fix Vercel asset build
+3. Commit to main
+4. Push origin
+5. Vercel 자동 재배포 확인
+
