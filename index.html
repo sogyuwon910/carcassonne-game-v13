@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#18241f" />
+    <title>타일 왕국: 개척자의 길</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell">
+      <section id="loading-screen" class="loading-screen" aria-live="polite">
+        <div class="loading-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <p>지도를 펼치는 중…</p>
+      </section>
+
+      <section id="start-screen" class="start-screen is-hidden" aria-labelledby="game-title">
+        <div class="start-art" aria-hidden="true">
+          <img src="/assets/tiles/tile_05.png" alt="" />
+          <img src="/assets/tiles/tile_22.png" alt="" />
+          <img src="/assets/tiles/tile_13.png" alt="" />
+          <img src="/assets/tiles/tile_01.png" alt="" />
+          <div class="meeple-silhouette"></div>
+        </div>
+        <div class="start-panel">
+          <p class="eyebrow">LOCAL STRATEGY · 2–4 PLAYERS</p>
+          <h1 id="game-title"><span>타일 왕국</span><small>개척자의 길</small></h1>
+          <p class="intro-copy">한 장의 타일에서 시작해 성과 길, 수도원이 이어지는 왕국을 완성하세요.</p>
+
+          <div class="setup-block">
+            <div class="setup-heading">
+              <div><span class="step-number">01</span><h2>탐험대 규모</h2></div>
+              <p>한 화면에서 번갈아 진행합니다</p>
+            </div>
+            <div id="player-count-options" class="count-options" role="radiogroup" aria-label="플레이어 수">
+              <button class="count-option is-selected" data-count="2" role="radio" aria-checked="true"><strong>2</strong><span>명</span></button>
+              <button class="count-option" data-count="3" role="radio" aria-checked="false"><strong>3</strong><span>명</span></button>
+              <button class="count-option" data-count="4" role="radio" aria-checked="false"><strong>4</strong><span>명</span></button>
+            </div>
+          </div>
+
+          <div class="setup-block player-setup-block">
+            <div class="setup-heading">
+              <div><span class="step-number">02</span><h2>개척자 구성</h2></div>
+              <p>사람 또는 8개 AI 중 하나를 선택하세요</p>
+            </div>
+            <div id="player-editor" class="player-editor"></div>
+          </div>
+
+          <div class="setup-block">
+            <div class="setup-heading">
+              <div><span class="step-number">03</span><h2>AI 연속 턴</h2></div>
+              <p>게임 중에도 바꿀 수 있습니다</p>
+            </div>
+            <label class="mode-field" for="setup-ai-mode">
+              <span>진행 방식</span>
+              <select id="setup-ai-mode">
+                <option value="auto">자동 진행</option>
+                <option value="click">클릭 진행</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="start-actions">
+            <button id="start-game-button" class="primary-button">왕국 만들기 <span aria-hidden="true">→</span></button>
+            <button id="exit-button" class="text-button">게임 종료</button>
+          </div>
+          <p class="start-footnote"><kbd>R</kbd> 회전 · <kbd>드래그</kbd> 지도 이동 · <kbd>휠</kbd> 확대/축소</p>
+        </div>
+      </section>
+
+      <section id="game-screen" class="game-screen is-hidden" aria-label="게임 화면">
+        <header class="game-header">
+          <button id="brand-button" class="brand-button" aria-label="새 게임 화면으로 돌아가기">
+            <span class="brand-mark"><i></i><i></i><i></i><i></i></span>
+            <span><strong>타일 왕국</strong><small>개척자의 길</small></span>
+          </button>
+          <div class="turn-heading">
+            <span id="round-label">ROUND 01</span>
+            <strong id="turn-title">당신의 차례입니다</strong>
+          </div>
+          <div class="header-actions">
+            <button id="debug-button" class="icon-text-button" aria-pressed="false" title="AI 디버그">AI LOG</button>
+            <button id="help-button" class="icon-button" aria-label="조작법 보기" title="조작법">?</button>
+            <button id="new-game-button" class="icon-text-button">새 게임</button>
+          </div>
+        </header>
+
+        <main class="game-layout">
+          <aside class="score-rail" aria-label="점수판">
+            <div class="rail-label">SCORE</div>
+            <div id="score-list" class="score-list"></div>
+          </aside>
+
+          <section id="board-wrap" class="board-wrap" aria-label="타일 보드">
+            <canvas id="board-canvas" tabindex="0" aria-label="타일을 놓는 게임 보드"></canvas>
+            <div class="board-tools" aria-label="보드 보기 도구">
+              <button id="zoom-in-button" aria-label="확대">+</button>
+              <button id="zoom-out-button" aria-label="축소">−</button>
+              <button id="center-board-button" aria-label="보드 중앙으로" title="보드 중앙으로">⌖</button>
+            </div>
+            <div class="history-toolbar" aria-label="게임 기록 이동">
+              <button id="history-previous-button" type="button">← 이전</button>
+              <span id="history-status">기록 1/1 · 원래 기록</span>
+              <select id="history-next-branch" aria-label="다음 기록 분기 선택"></select>
+              <button id="history-next-button" type="button">다음 →</button>
+            </div>
+            <div id="history-warning" class="history-warning" role="status"></div>
+            <div id="phase-banner" class="phase-banner">
+              <span id="phase-index">1</span>
+              <div><strong id="phase-title">타일을 놓을 위치를 고르세요</strong><small id="phase-description">빛나는 칸에만 배치할 수 있습니다</small></div>
+            </div>
+            <div id="board-toast" class="board-toast" role="status" aria-live="polite"></div>
+          </section>
+
+          <aside class="turn-panel" aria-label="현재 차례 정보">
+            <div class="panel-player">
+              <span id="current-color" class="player-color"></span>
+              <div><small>현재 개척자</small><strong id="current-player-name">플레이어 1</strong></div>
+              <div class="meeple-count"><span class="mini-meeple"></span><strong id="current-meeples">7</strong></div>
+            </div>
+
+            <div class="tile-preview-card">
+              <div class="card-heading"><span>이번 타일</span><small id="tile-id-label">TILE 01</small></div>
+              <div class="tile-preview-wrap">
+                <div class="tile-shadow"></div>
+                <img id="current-tile-image" src="/assets/tiles/tile_01.png" alt="현재 뽑은 타일" />
+              </div>
+              <button id="rotate-button" class="secondary-button"><span aria-hidden="true">↻</span> 90° 회전 <kbd>R</kbd></button>
+            </div>
+
+            <div class="turn-stats">
+              <div><span>남은 타일</span><strong id="tiles-left">71</strong></div>
+              <div><span>현재 점수</span><strong id="current-score">0</strong></div>
+              <div><span>회전 상태</span><strong id="rotation-label">0°</strong></div>
+            </div>
+
+            <div class="ai-turn-controls">
+              <label for="game-ai-mode"><span>AI 턴 진행</span><select id="game-ai-mode"><option value="auto">자동 진행</option><option value="click">클릭 진행</option></select></label>
+              <button id="ai-action-button" class="primary-button" disabled>AI 행동 실행 <span aria-hidden="true">→</span></button>
+            </div>
+
+            <div id="advice-panel" class="advice-panel">
+              <div class="advice-heading"><strong>AI에게 물어보기</strong><small>추천은 자동 적용되지 않습니다</small></div>
+              <div class="advice-controls"><select id="advice-ai-select" aria-label="조언할 AI 선택"></select><button id="ask-ai-button" class="secondary-button">조언 요청</button></div>
+              <div id="advice-result" class="advice-result" aria-live="polite">AI를 선택하고 조언을 요청하세요.</div>
+            </div>
+
+            <div class="turn-actions">
+              <button id="skip-meeple-button" class="secondary-button" disabled>미플 놓지 않기</button>
+              <button id="end-turn-button" class="primary-button" disabled>턴 마치기 <span aria-hidden="true">→</span></button>
+            </div>
+            <p id="action-hint" class="action-hint">초록색으로 표시된 칸을 선택하세요.</p>
+          </aside>
+        </main>
+
+        <section id="debug-drawer" class="debug-drawer" aria-hidden="true">
+          <div class="debug-heading"><div><span>AI EVALUATION</span><strong>가치 함수 디버그</strong></div><button id="close-debug-button" aria-label="닫기">×</button></div>
+          <div id="debug-content" class="debug-content"><p>AI가 행동을 평가하면 현재 전략과 후보별 C(S), N(S), I(S), F(S), M(S), V(S)가 표시됩니다.</p></div>
+        </section>
+      </section>
+
+      <dialog id="help-dialog" class="modal help-modal">
+        <button class="modal-close" data-close-dialog aria-label="닫기">×</button>
+        <p class="eyebrow">HOW TO PLAY</p><h2>왕국을 잇는 법</h2>
+        <div class="help-grid">
+          <div><span>01</span><strong>타일 배치</strong><p>턴을 마치기 전에는 놓은 타일이나 다른 후보 칸을 눌러 다시 배치할 수 있습니다.</p></div>
+          <div><span>02</span><strong>미플 선택</strong><p>비어 있는 성, 길, 수도원에 미플 하나를 놓을 수 있습니다.</p></div>
+          <div><span>03</span><strong>구조물 완성</strong><p>닫힌 성과 길, 둘러싸인 수도원에서 즉시 점수를 얻습니다.</p></div>
+          <div><span>04</span><strong>최종 점수</strong><p>타일을 모두 쓰면 미완성 구조물도 계산해 순위를 정합니다.</p></div>
+        </div>
+        <div class="shortcut-list"><span><kbd>R</kbd> 회전</span><span><kbd>H</kbd> 도움말</span><span><kbd>ESC</kbd> 선택 취소</span><span><kbd>우클릭 드래그</kbd> 이동</span></div>
+      </dialog>
+
+      <dialog id="game-over-dialog" class="modal game-over-modal">
+        <p class="eyebrow">THE KINGDOM IS COMPLETE</p><h2>최종 순위</h2>
+        <p id="winner-copy" class="winner-copy"></p><div id="final-ranking" class="final-ranking"></div>
+        <div class="modal-actions"><button id="play-again-button" class="primary-button">같은 구성으로 다시</button><button id="change-players-button" class="secondary-button">시작 설정으로</button><button id="review-history-button" class="secondary-button">종료 직전 기록 보기</button></div>
+      </dialog>
+    </div>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

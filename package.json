@@ -1,0 +1,16 @@
+{
+  "name": "tile-kingdom-game",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "test": "vitest run --config vitest.config.js",
+    "build": "vite build && node scripts/copy-assets.mjs",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.0.0",
+    "vitest": "^4.0.0"
+  }
+}
